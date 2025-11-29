@@ -1,0 +1,65 @@
+# LLMKube Deployment for IssueParser
+# Model: Qwen 2.5 14B on dual RTX 5060Ti GPUs (32GB total VRAM)
+#
+# Deploy with:
+#   kubectl apply -f deploy/llmkube-qwen-14b.yaml
+#
+# Prerequisites:
+#   - LLMKube controller installed (helm install llmkube llmkube/llmkube)
+#   - NVIDIA GPU Operator installed
+#   - Kubernetes node with 2x RTX 5060Ti GPUs
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: Model
+metadata:
+  name: qwen-14b-issueparser
+  namespace: default
+  labels:
+    app: issueparser
+    model: qwen-2.5-14b
+spec:
+  # Qwen 2.5 14B Instruct - Q5_K_M quantization (~10GB model file)
+  source: https://huggingface.co/bartowski/Qwen2.5-14B-Instruct-GGUF/resolve/main/Qwen2.5-14B-Instruct-Q5_K_M.gguf
+  format: gguf
+  quantization: Q5_K_M
+
+  hardware:
+    accelerator: cuda
+    gpu:
+      enabled: true
+      count: 2              # Dual RTX 5060Ti
+      vendor: nvidia
+      layers: -1            # Offload all 48 layers to GPUs
+      memory: "16Gi"        # Per-GPU memory (16GB each)
+      sharding:
+        strategy: layer     # Layer-based sharding across GPUs
+
+  resources:
+    cpu: "6"
+    memory: "16Gi"
+
+---
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: InferenceService
+metadata:
+  name: qwen-14b-issueparser-service
+  namespace: default
+  labels:
+    app: issueparser
+spec:
+  modelRef: qwen-14b-issueparser
+  replicas: 1
+
+  # CUDA-enabled llama.cpp server
+  image: ghcr.io/ggerganov/llama.cpp:server-cuda
+
+  resources:
+    gpu: 2                # Request both GPUs
+    gpuMemory: "32Gi"     # Total VRAM across both cards
+    cpu: "6"
+    memory: "16Gi"
+
+  endpoint:
+    port: 8080
+    type: ClusterIP       # Internal service for in-cluster access
+    path: /v1/chat/completions

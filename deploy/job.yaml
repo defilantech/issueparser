@@ -1,0 +1,87 @@
+# Kubernetes Job for IssueParser
+# Runs the GitHub issue analysis as a batch job
+#
+# Prerequisites:
+#   1. LLMKube deployed with qwen-14b-issueparser-service running
+#   2. GitHub token secret created:
+#      kubectl create secret generic github-token --from-literal=token=ghp_xxx
+#   3. IssueParser image built and pushed:
+#      docker build -t your-registry/issueparser:latest .
+#      docker push your-registry/issueparser:latest
+#
+# Run with:
+#   kubectl apply -f deploy/job.yaml
+#
+# View logs:
+#   kubectl logs -f job/issueparser-analysis
+#
+# Get results:
+#   kubectl cp default/issueparser-analysis-xxx:/output/issue-analysis-report.md ./report.md
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: issueparser-output
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: issueparser-analysis
+  namespace: default
+  labels:
+    app: issueparser
+spec:
+  ttlSecondsAfterFinished: 3600  # Clean up 1 hour after completion
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app: issueparser
+    spec:
+      restartPolicy: OnFailure
+      hostNetwork: true  # Use host networking to bypass DNS issues
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - "8.8.8.8"
+          - "8.8.4.4"
+      containers:
+        - name: issueparser
+          image: localhost:32000/issueparser:latest  # Loaded directly into containerd
+          imagePullPolicy: IfNotPresent  # Use local image
+          args:
+            - "--repos=ollama/ollama,vllm-project/vllm"
+            - "--keywords=multi-gpu,scale,concurrency,production,performance,memory,VRAM,timeout,slow"
+            - "--max-issues=100"
+            - "--llm-endpoint=http://qwen-14b-issueparser-service:8080"
+            - "--llm-model=qwen-2.5-14b"
+            - "--output=/output/issue-analysis-report.md"
+            - "--verbose"
+          env:
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: github-token
+                  key: token
+                  optional: true  # Will work without token but with rate limits
+          volumeMounts:
+            - name: output
+              mountPath: /output
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "256Mi"
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+      volumes:
+        - name: output
+          persistentVolumeClaim:
+            claimName: issueparser-output
