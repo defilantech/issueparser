@@ -40,7 +40,7 @@ IssueParser is a Go CLI tool that analyzes GitHub issues using an LLM to identif
 - **Tests & Lint** - Run on every PR and push to main
 - **Release Please** - Automates version bumps and changelogs based on conventional commits
 - **GoReleaser** - Builds cross-platform binaries (linux/darwin × amd64/arm64) and Docker images on release
-- Docker images published to `ghcr.io/defilan/issueparser`
+- Docker images published to `ghcr.io/defilantech/issueparser`
 
 ## Conventions
 
