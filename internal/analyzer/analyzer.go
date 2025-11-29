@@ -20,11 +20,11 @@ type Options struct {
 }
 
 type Analysis struct {
-	Themes        []Theme       `json:"themes"`
-	KeyInsights   []string      `json:"key_insights"`
-	Quotes        []Quote       `json:"quotes"`
-	ActionItems   []string      `json:"action_items"`
-	RawIssueCount int           `json:"raw_issue_count"`
+	Themes        []Theme  `json:"themes"`
+	KeyInsights   []string `json:"key_insights"`
+	Quotes        []Quote  `json:"quotes"`
+	ActionItems   []string `json:"action_items"`
+	RawIssueCount int      `json:"raw_issue_count"`
 }
 
 type Theme struct {
@@ -182,12 +182,12 @@ func (a *Analyzer) parseAnalysis(response string, issueURLs map[int]string, issu
 	// Try to parse the JSON
 	var rawAnalysis struct {
 		Themes []struct {
-			Name         string   `json:"name"`
-			Description  string   `json:"description"`
-			IssueNumbers []int    `json:"issue_numbers"`
-			IssueCount   int      `json:"issue_count"`
-			Severity     string   `json:"severity"`
-			Examples     []string `json:"examples"`
+			Name          string   `json:"name"`
+			Description   string   `json:"description"`
+			IssueNumbers  []int    `json:"issue_numbers"`
+			IssueCount    int      `json:"issue_count"`
+			Severity      string   `json:"severity"`
+			Examples      []string `json:"examples"`
 			ExampleQuotes []string `json:"example_quotes"`
 		} `json:"themes"`
 		KeyInsights   []string `json:"key_insights"`

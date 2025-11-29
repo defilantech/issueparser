@@ -26,9 +26,11 @@ func main() {
 		verbose     bool
 	)
 
-	flag.StringVar(&repos, "repos", "ollama/ollama,vllm-project/vllm", "Comma-separated list of repos (owner/repo). Examples: ollama/ollama, vllm-project/vllm, ggerganov/llama.cpp")
+	flag.StringVar(&repos, "repos", "ollama/ollama,vllm-project/vllm",
+		"Comma-separated repos (owner/repo)")
 	flag.StringVar(&labels, "labels", "", "Filter by labels (comma-separated)")
-	flag.StringVar(&keywords, "keywords", "multi-gpu,scale,concurrency,production,performance", "Keywords to search for in issues")
+	flag.StringVar(&keywords, "keywords", "multi-gpu,scale,concurrency,production,performance",
+		"Keywords to search for in issues")
 	flag.IntVar(&maxIssues, "max-issues", 100, "Maximum issues to fetch per repo")
 	flag.StringVar(&llmEndpoint, "llm-endpoint", "http://qwen-14b-issueparser-service:8080", "LLMKube service endpoint")
 	flag.StringVar(&llmModel, "llm-model", "qwen-2.5-14b", "Model name for API calls")

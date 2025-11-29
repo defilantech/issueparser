@@ -185,7 +185,7 @@ func (c *Client) fetchSearchPage(ctx context.Context, endpoint string) (*searchR
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Check rate limit headers
 	if remaining := resp.Header.Get("X-RateLimit-Remaining"); remaining != "" {
@@ -228,7 +228,7 @@ func (c *Client) fetchPage(ctx context.Context, endpoint string) ([]Issue, error
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Check rate limit headers
 	if remaining := resp.Header.Get("X-RateLimit-Remaining"); remaining != "" {

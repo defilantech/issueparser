@@ -1,0 +1,39 @@
+version: "2"
+run:
+  allow-parallel-runners: true
+linters:
+  default: none
+  enable:
+    - copyloopvar
+    - dupl
+    - errcheck
+    - goconst
+    - gocyclo
+    - govet
+    - ineffassign
+    - lll
+    - misspell
+    - nakedret
+    - prealloc
+    - revive
+    - staticcheck
+    - unconvert
+    - unparam
+    - unused
+  settings:
+    lll:
+      line-length: 140
+    revive:
+      rules:
+        - name: comment-spacings
+        - name: import-shadowing
+  exclusions:
+    rules:
+      # Allow longer lines in analyzer (LLM prompts)
+      - linters:
+          - lll
+        path: internal/analyzer/
+formatters:
+  enable:
+    - gofmt
+    - goimports

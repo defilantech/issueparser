@@ -1,0 +1,178 @@
+# GoReleaser configuration for IssueParser
+# https://goreleaser.com/customization/
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: issueparser
+    main: ./cmd/issueparser
+    binary: issueparser
+
+    # Build for Linux and macOS
+    goos:
+      - linux
+      - darwin
+
+    goarch:
+      - amd64
+      - arm64
+
+    env:
+      - CGO_ENABLED=0
+
+    ldflags:
+      - -s -w
+
+archives:
+  - id: issueparser
+    builds:
+      - issueparser
+
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+dockers:
+  - id: issueparser-amd64
+    goos: linux
+    goarch: amd64
+    ids:
+      - issueparser
+    image_templates:
+      - "ghcr.io/defilan/issueparser:{{ .Version }}-amd64"
+      - "ghcr.io/defilan/issueparser:latest-amd64"
+    dockerfile: Dockerfile.goreleaser
+    use: buildx
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+
+  - id: issueparser-arm64
+    goos: linux
+    goarch: arm64
+    ids:
+      - issueparser
+    image_templates:
+      - "ghcr.io/defilan/issueparser:{{ .Version }}-arm64"
+      - "ghcr.io/defilan/issueparser:latest-arm64"
+    dockerfile: Dockerfile.goreleaser
+    use: buildx
+    build_flag_templates:
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+
+docker_manifests:
+  - name_template: "ghcr.io/defilan/issueparser:{{ .Version }}"
+    image_templates:
+      - "ghcr.io/defilan/issueparser:{{ .Version }}-amd64"
+      - "ghcr.io/defilan/issueparser:{{ .Version }}-arm64"
+
+  - name_template: "ghcr.io/defilan/issueparser:latest"
+    image_templates:
+      - "ghcr.io/defilan/issueparser:latest-amd64"
+      - "ghcr.io/defilan/issueparser:latest-arm64"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^chore:"
+      - "merge conflict"
+      - Merge pull request
+      - Merge remote-tracking branch
+      - Merge branch
+
+  groups:
+    - title: "New Features"
+      regexp: "^feat:"
+      order: 0
+    - title: "Bug Fixes"
+      regexp: "^fix:"
+      order: 1
+    - title: "Performance Improvements"
+      regexp: "^perf:"
+      order: 2
+    - title: "Other Changes"
+      order: 999
+
+release:
+  github:
+    owner: defilan
+    name: issueparser
+
+  name_template: "v{{.Version}}"
+
+  draft: false
+
+  replace_existing_draft: true
+
+  # Keep Release Please's changelog, just add assets
+  mode: keep-existing
+
+  footer: |
+    ---
+
+    ## Installation
+
+    ### Docker
+    ```bash
+    docker pull ghcr.io/defilan/issueparser:{{ .Version }}
+    ```
+
+    ### Manual Download
+
+    **macOS**
+    ```bash
+    # ARM64 (Apple Silicon)
+    curl -L https://github.com/defilan/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_darwin_arm64.tar.gz | tar xz
+    sudo mv issueparser /usr/local/bin/
+
+    # AMD64
+    curl -L https://github.com/defilan/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_darwin_amd64.tar.gz | tar xz
+    sudo mv issueparser /usr/local/bin/
+    ```
+
+    **Linux**
+    ```bash
+    # AMD64
+    curl -L https://github.com/defilan/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_linux_amd64.tar.gz | tar xz
+    sudo mv issueparser /usr/local/bin/
+
+    # ARM64
+    curl -L https://github.com/defilan/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_linux_arm64.tar.gz | tar xz
+    sudo mv issueparser /usr/local/bin/
+    ```
+
+    ### Verify Installation
+    ```bash
+    issueparser --help
+    ```
+
+metadata:
+  mod_timestamp: "{{ .CommitTimestamp }}"

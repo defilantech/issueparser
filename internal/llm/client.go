@@ -63,10 +63,10 @@ func (c *Client) Chat(ctx context.Context, messages []Message, maxTokens int) (*
 		Model:           c.model,
 		Messages:        messages,
 		MaxTokens:       maxTokens,
-		Temperature:     0.7,  // Higher temperature to avoid repetition
-		TopP:            0.9,  // Nucleus sampling
-		RepeatPenalty:   1.15, // Penalize repetition (llama.cpp parameter)
-		PresencePenalty: 0.1,  // Slight presence penalty
+		Temperature:     0.7,                             // Higher temperature to avoid repetition
+		TopP:            0.9,                             // Nucleus sampling
+		RepeatPenalty:   1.15,                            // Penalize repetition (llama.cpp parameter)
+		PresencePenalty: 0.1,                             // Slight presence penalty
 		Stop:            []string{"```\n\n", "\n\n\n\n"}, // Stop on repeated newlines
 	}
 
@@ -87,7 +87,7 @@ func (c *Client) Chat(ctx context.Context, messages []Message, maxTokens int) (*
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != 200 {
 		respBody, _ := io.ReadAll(resp.Body)
@@ -131,7 +131,7 @@ func (c *Client) HealthCheck(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("unhealthy status: %d", resp.StatusCode)

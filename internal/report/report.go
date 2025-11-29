@@ -122,7 +122,8 @@ func (r *Report) WriteMarkdown(filename string) error {
 	sb.WriteString("- **IssueParser** - GitHub issue theme analyzer\n")
 	sb.WriteString("- **LLMKube** - Kubernetes-native LLM inference platform\n")
 	sb.WriteString("- **Model:** Qwen 2.5 14B (dual GPU inference)\n\n")
-	sb.WriteString("Issues were fetched via GitHub REST API, batched, and analyzed for common themes using LLM-powered pattern recognition.\n")
+	sb.WriteString("Issues were fetched via GitHub REST API, batched, and analyzed ")
+	sb.WriteString("for common themes using LLM-powered pattern recognition.\n")
 
 	return os.WriteFile(filename, []byte(sb.String()), 0644)
 }

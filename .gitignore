@@ -26,6 +26,9 @@ go.work.sum
 issue-analysis-report.md
 *.tar.gz
 
+# GoReleaser
+dist/
+
 # Local configuration
 .env
 .envrc
