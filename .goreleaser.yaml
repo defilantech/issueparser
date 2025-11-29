@@ -49,8 +49,8 @@ dockers:
     ids:
       - issueparser
     image_templates:
-      - "ghcr.io/defilan/issueparser:{{ .Version }}-amd64"
-      - "ghcr.io/defilan/issueparser:latest-amd64"
+      - "ghcr.io/defilantech/issueparser:{{ .Version }}-amd64"
+      - "ghcr.io/defilantech/issueparser:latest-amd64"
     dockerfile: Dockerfile.goreleaser
     use: buildx
     build_flag_templates:
@@ -67,8 +67,8 @@ dockers:
     ids:
       - issueparser
     image_templates:
-      - "ghcr.io/defilan/issueparser:{{ .Version }}-arm64"
-      - "ghcr.io/defilan/issueparser:latest-arm64"
+      - "ghcr.io/defilantech/issueparser:{{ .Version }}-arm64"
+      - "ghcr.io/defilantech/issueparser:latest-arm64"
     dockerfile: Dockerfile.goreleaser
     use: buildx
     build_flag_templates:
@@ -80,15 +80,15 @@ dockers:
       - "--label=org.opencontainers.image.source={{.GitURL}}"
 
 docker_manifests:
-  - name_template: "ghcr.io/defilan/issueparser:{{ .Version }}"
+  - name_template: "ghcr.io/defilantech/issueparser:{{ .Version }}"
     image_templates:
-      - "ghcr.io/defilan/issueparser:{{ .Version }}-amd64"
-      - "ghcr.io/defilan/issueparser:{{ .Version }}-arm64"
+      - "ghcr.io/defilantech/issueparser:{{ .Version }}-amd64"
+      - "ghcr.io/defilantech/issueparser:{{ .Version }}-arm64"
 
-  - name_template: "ghcr.io/defilan/issueparser:latest"
+  - name_template: "ghcr.io/defilantech/issueparser:latest"
     image_templates:
-      - "ghcr.io/defilan/issueparser:latest-amd64"
-      - "ghcr.io/defilan/issueparser:latest-arm64"
+      - "ghcr.io/defilantech/issueparser:latest-amd64"
+      - "ghcr.io/defilantech/issueparser:latest-arm64"
 
 snapshot:
   version_template: "{{ incpatch .Version }}-next"
@@ -123,7 +123,7 @@ changelog:
 
 release:
   github:
-    owner: defilan
+    owner: defilantech
     name: issueparser
 
   name_template: "v{{.Version}}"
@@ -142,7 +142,7 @@ release:
 
     ### Docker
     ```bash
-    docker pull ghcr.io/defilan/issueparser:{{ .Version }}
+    docker pull ghcr.io/defilantech/issueparser:{{ .Version }}
     ```
 
     ### Manual Download
@@ -150,22 +150,22 @@ release:
     **macOS**
     ```bash
     # ARM64 (Apple Silicon)
-    curl -L https://github.com/defilan/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_darwin_arm64.tar.gz | tar xz
+    curl -L https://github.com/defilantech/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_darwin_arm64.tar.gz | tar xz
     sudo mv issueparser /usr/local/bin/
 
     # AMD64
-    curl -L https://github.com/defilan/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_darwin_amd64.tar.gz | tar xz
+    curl -L https://github.com/defilantech/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_darwin_amd64.tar.gz | tar xz
     sudo mv issueparser /usr/local/bin/
     ```
 
     **Linux**
     ```bash
     # AMD64
-    curl -L https://github.com/defilan/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_linux_amd64.tar.gz | tar xz
+    curl -L https://github.com/defilantech/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_linux_amd64.tar.gz | tar xz
     sudo mv issueparser /usr/local/bin/
 
     # ARM64
-    curl -L https://github.com/defilan/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_linux_arm64.tar.gz | tar xz
+    curl -L https://github.com/defilantech/issueparser/releases/download/v{{ .Version }}/issueparser_{{ .Version }}_linux_arm64.tar.gz | tar xz
     sudo mv issueparser /usr/local/bin/
     ```
 
