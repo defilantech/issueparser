@@ -1,0 +1,11 @@
+# Dockerfile for GoReleaser builds
+# This Dockerfile expects a pre-built binary in the build context
+# and simply packages it into a minimal container image.
+
+FROM alpine:3.19
+RUN apk add --no-cache ca-certificates
+WORKDIR /
+COPY issueparser /usr/local/bin/issueparser
+USER 65532:65532
+
+ENTRYPOINT ["/usr/local/bin/issueparser"]
